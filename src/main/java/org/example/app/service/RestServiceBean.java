@@ -1,10 +1,11 @@
-package org.example;
+package org.example.app.service;
 
-import javax.ejb.Stateless;
+import org.example.app.bean.Bean;
+
+import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,34 +16,26 @@ import java.util.Map;
  * окружения. Код работы с переменными окружения вынести в отдельный EJB-бин.
  */
 
-@Path("/myapp")
-@ApplicationPath("/rest")
-@Stateless
+@Path("/service")
+@ApplicationPath("/app")
 public class RestServiceBean extends Application {
 
+    @EJB
+    Bean bean;
+
     @GET
-    @Path("/allEnv") //http://localhost:8080/STC27-JavaEE-1.0.0/rest/myapp/allEnv
+    @Path("/allEnv") //http://localhost:8080/homework_14_rest/app/service/allEnv
     @Produces(MediaType.APPLICATION_JSON)
-    public static Map<String, String> getEnv() {
-        return System.getenv();
+    public Map<String, String> getAll() {
+        return bean.getEnv();
     }
 
     @GET
-    @Path("/{oneEnv}") //http://localhost:8080/STC27-JavaEE-1.0.0/rest/myapp/JAVA
+    @Path("/{oneEnv}") //http://localhost:8080/homework_14_rest/app/service/JAVA
     @Produces(MediaType.APPLICATION_JSON)
-    public String getOne(@PathParam("oneEnv") String var) {
-        if (RestServiceBean.getEnv().containsKey(var) || RestServiceBean.getEnv().containsValue(var)) {
-            return RestServiceBean.getEnv().get(var);
-        }
-        return "Param not found";
+    public String getOne(@PathParam("oneEnv") String name) {
+        return bean.getEnv().get(name);
     }
-
-    public List<String> toList() {
-        List<String> list = null;
-        for (String string : RestServiceBean.getEnv().keySet()) {
-            list.add(string);
-            System.out.println(string);
-        }
-        return list;
-    }
+    // for all env in table view:
+    //http://localhost:8080/homework_14_rest/table.xhtml
 }
